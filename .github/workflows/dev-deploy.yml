@@ -11,7 +11,7 @@ env:
   ECR_REPOSITORY: dev-csp                               # set this to your Amazon ECR repository name
   ECS_SERVICE: test2-ecs-service                         # set this to your Amazon ECS service name
   ECS_CLUSTER: test2-ecs-cluster                               # set this to your Amazon ECS cluster name
-  ECS_TASK_DEFINITION: test2-tf-revision10.json # set this to the path to your Amazon ECS task definition
+  ECS_TASK_DEFINITION: test2-tf-revision10.json           # set this to the path to your Amazon ECS task definition (add)
                                                              # file, e.g. .aws/task-definition.json
   CONTAINER_NAME: dockerargs                               # set this to the name of the container in the
                                                              # containerDefinitions section of your task definition
