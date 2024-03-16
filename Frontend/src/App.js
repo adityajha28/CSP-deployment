@@ -29,7 +29,7 @@ import ProjectManagerLayout from './components/ProjectManager/ProjectManagerLayo
 import ClientLayout from './components/Client/ClientLayout';
 
 function App() {
-  const [authenticated, setAuthenticated] = useState(null);
+  const [authenticated, setAuthenticated] = useState(false);
 
   const [userRole, setUserRole] = useState('');
   useEffect(() => {
@@ -53,7 +53,7 @@ function App() {
         <Route path="sprintdetails" element={<SprintDetails />} />
         <Route path="VersionHistory" element={<VersionHistory/>} />
         <Route path="AuditHistory" element={<AuditHistoryComponent/>} />
-      <Route path="/clientfeedbackform" element={<ClientFeedbackForm />} />
+        <Route path="clientfeedbackform" element={<ClientFeedbackForm />} />
       </Route>
     </>
   );
