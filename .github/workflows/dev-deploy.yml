@@ -15,7 +15,7 @@ env:
   BACKEND_IMAGE_NAME: aditya280102/csp-backend                # Docker image name for backend
   FRONTEND_IMAGE_NAME: aditya280102/csp-frontend              # Docker image name for frontend
   CONTAINER_BACKEND: backend                                  # Container name for backend in the task definition
-  CONTAINER_FRONTEND: frontend                                # Container name for frontend in the task definition
+  CONTAINER_FRONTEND: frontend                                # Container name for frontend in the task definition hello!!
 
 jobs:
   deploy:
