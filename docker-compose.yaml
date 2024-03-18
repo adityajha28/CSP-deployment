@@ -1,40 +1,5 @@
-# services:
- 
-#   backend:
-#     image: aditya280102/csp-backend
-#     build:
-#       context: ./Backend
-#       dockerfile: Dockerfile
-#     expose:
-#       - 8081
-#     ports:
-#       - "8081:8081"
-#     depends_on:
-#       - pgdb
-
-
-#   frontend:
-#     image: aditya280102/csp-frontend
-#     build:
-#       context: ./Frontend
-#       dockerfile: Dockerfile
-#     ports:
-#       - "3000:3000"
-
-
-#   pgdb:
-#     image: postgres:latest
-#     container_name: pgdb
-#     environment:
-#       POSTGRES_DB: Customer_Success
-#       POSTGRES_USER: postgres
-#       POSTGRES_PASSWORD: aditya
-#     expose:
-#       - 5432
-#     ports:
-#       - "5432:5432"
-
 services:
+ 
   backend:
     image: aditya280102/csp-backend
     build:
@@ -46,9 +11,7 @@ services:
       - "8081:8081"
     depends_on:
       - pgdb
-    volumes:
-      - ./Backend/certificate.pem:/app/certificate.pem
-      - ./Backend/key.pem:/app/key.pem
+
 
   frontend:
     image: aditya280102/csp-frontend
@@ -57,9 +20,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    volumes:
-      - ./Frontend/certificate.pem:/usr/src/app/certificate.pem
-      - ./Frontend/key.pem:/usr/src/app/key.pem
+
 
   pgdb:
     image: postgres:latest
