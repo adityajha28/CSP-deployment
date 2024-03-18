@@ -1,4 +1,3 @@
-
 name: Deploy to Amazon ECS
 
 on:
@@ -8,13 +7,15 @@ on:
 
 env:
   AWS_REGION: ap-south-1                                     # set this to your preferred AWS region, e.g. ap-south-1
-  ECR_REPOSITORY: dev-csp                               # set this to your Amazon ECR repository name
-  ECS_SERVICE: test2-ecs-service                         # set this to your Amazon ECS service name
-  ECS_CLUSTER: test2-ecs-cluster                               # set this to your Amazon ECS cluster name
-  ECS_TASK_DEFINITION: test2-tf-revision10.json           # set this to the path to your Amazon ECS task definition (add)
-                                                             # file, e.g. .aws/task-definition.json
-  CONTAINER_NAME: dockerargs                               # set this to the name of the container in the
-                                                             # containerDefinitions section of your task definition
+  ECR_REPOSITORY: dev-csp                                    # set this to your Amazon ECR repository name
+  ECS_SERVICE: test2-ecs-service                              # set this to your Amazon ECS service name
+  ECS_CLUSTER: test2-ecs-cluster                              # set this to your Amazon ECS cluster name
+  ECS_TASK_DEFINITION: test2-tf-revision10.json               # set this to the path to your Amazon ECS task definition (add)
+                                                              # file, e.g. .aws/task-definition.json
+  BACKEND_IMAGE_NAME: aditya280102/csp-backend                # Docker image name for backend
+  FRONTEND_IMAGE_NAME: aditya280102/csp-frontend              # Docker image name for frontend
+  CONTAINER_BACKEND: backend                                  # Container name for backend in the task definition
+  CONTAINER_FRONTEND: frontend                                # Container name for frontend in the task definition
 
 jobs:
   deploy:
@@ -36,32 +37,46 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@62f4f872db3836360b72999f4b87f1ff13310f3a
 
-      - name: Build, tag, and push image to Amazon ECR
-        id: build-image
+      - name: Build, tag, and push backend image to Amazon ECR
+        id: build-backend-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          # Build a docker container and
-          # push it to ECR so that it can
-          # be deployed to ECS.
-          cd ./Frontend
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY/backend:$IMAGE_TAG ./Backend
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY/backend:$IMAGE_TAG
+          echo "backend_image=$ECR_REGISTRY/$ECR_REPOSITORY/backend:$IMAGE_TAG" >> $GITHUB_ENV
 
-      - name: Fill in the new image ID in the Amazon ECS task definition
-        id: task-def
+      - name: Build, tag, and push frontend image to Amazon ECR
+        id: build-frontend-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY/frontend:$IMAGE_TAG ./Frontend
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY/frontend:$IMAGE_TAG
+          echo "frontend_image=$ECR_REGISTRY/$ECR_REPOSITORY/frontend:$IMAGE_TAG" >> $GITHUB_ENV
+
+      - name: Fill in the new backend image ID in the Amazon ECS task definition
+        id: task-def-backend
         uses: aws-actions/amazon-ecs-render-task-definition@c804dfbdd57f713b6c079302a4c01db7017a36fc
         with:
           task-definition: ${{ env.ECS_TASK_DEFINITION }}
-          container-name: ${{ env.CONTAINER_NAME }}
-          image: ${{ steps.build-image.outputs.image }}
+          container-name: ${{ env.CONTAINER_BACKEND }}
+          image: ${{ steps.build-backend-image.outputs.backend_image }}
+
+      - name: Fill in the new frontend image ID in the Amazon ECS task definition
+        id: task-def-frontend
+        uses: aws-actions/amazon-ecs-render-task-definition@c804dfbdd57f713b6c079302a4c01db7017a36fc
+        with:
+          task-definition: ${{ steps.task-def-backend.outputs.task-definition }}
+          container-name: ${{ env.CONTAINER_FRONTEND }}
+          image: ${{ steps.build-frontend-image.outputs.frontend_image }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
         with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          task-definition: ${{ steps.task-def-frontend.outputs.task-definition }}
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
