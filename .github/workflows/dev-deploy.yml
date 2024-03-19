@@ -57,7 +57,7 @@ jobs:
         with:
           task-definition: ${{ env.BACKEND_ECS_TASK_DEFINITION }}
           container-name: ${{ env.CONTAINER_BACKEND }}
-          image: ${{ steps.build-backend-image.outputs.backend_image }}
+          image: ${{ env.backend_image }}
 
       - name: Deploy Amazon ECS task definition for backend
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -90,7 +90,7 @@ jobs:
         with:
           task-definition: ${{ env.FRONTEND_ECS_TASK_DEFINITION }}
           container-name: ${{ env.CONTAINER_FRONTEND }}
-          image: ${{ steps.build-frontend-image.outputs.frontend_image }}
+          image: ${{ env.frontend_image }}
 
       - name: Deploy Amazon ECS task definition for frontend
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
