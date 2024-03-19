@@ -7,7 +7,7 @@ on:
 
 env:
   AWS_REGION: ap-south-1                                     # set this to your preferred AWS region, e.g. ap-south-1
-  BACKEND_ECR_REPOSITORY: csp-backend                        # set this to your Amazon ECR repository name for backend
+  BACKEND_ECR_REPOSITORY: csp-backend                        # set this to your Amazon ECR repository name fo backend
   BACKEND_ECS_SERVICE: test-backend-service                  # set this to your Amazon ECS service name for backend
   BACKEND_ECS_CLUSTER: test2-ecs-cluster                     # set this to your Amazon ECS cluster name for backend
   BACKEND_ECS_TASK_DEFINITION: test2-tf-backend-revision1.json # set this to the path to your Amazon ECS task definition for backend
@@ -60,7 +60,7 @@ jobs:
         with:
           task-definition: ${{ env.BACKEND_ECS_TASK_DEFINITION }}
           container-name: ${{ env.CONTAINER_BACKEND }}
-          image: ${{ steps.build-backend-image.outputs.backend_image }}
+          image: ${{ env.backend_image }}
 
       - name: Deploy Amazon ECS task definition for backend
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -130,7 +130,7 @@ jobs:
         with:
           task-definition: ${{ env.FRONTEND_ECS_TASK_DEFINITION }}
           container-name: ${{ env.CONTAINER_FRONTEND }}
-          image: ${{ steps.build-frontend-image.outputs.frontend_image }}
+          image: ${{ env.frontend_image }}
 
       - name: Deploy Amazon ECS task definition for frontend
         uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
