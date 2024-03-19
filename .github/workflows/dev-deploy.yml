@@ -64,23 +64,6 @@ jobs:
           cluster: ${{ env.BACKEND_ECS_CLUSTER }}
           wait-for-service-stability: true
 
-      - name: Build, tag, and push frontend image to Amazon ECR
-        id: build-frontend-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr-frontend.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build -t $ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:$IMAGE_TAG ./Frontend
-          docker push $ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:$IMAGE_TAG
-          echo "frontend_image=$ECR_REGISTRY/$FRONTEND_ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
-
-      - name: Deploy Amazon ECS task definition for backend
-        uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
-        with:
-          task-definition: ${{ steps.task-def-backend.outputs.task-definition }}
-          service: ${{ env.BACKEND_ECS_SERVICE }}
-          cluster: ${{ env.BACKEND_ECS_CLUSTER }}
-          wait-for-service-stability: true
 
   deploy_frontend:
     name: Deploy Frontend
