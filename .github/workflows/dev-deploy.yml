@@ -36,13 +36,7 @@ jobs:
 
       - name: Login to Amazon ECR Backend
         id: login-ecr-backend
-        uses: aws-actions/amazon-ecr-login@62f4f872db3836360b72999f4b87f1ff13310f3a
-      - name: Login to Amazon ECR Backend
-        id: login-ecr-backend
-        uses: aws-actions/amazon-ecr-login@v1
-        with:
-          region: ${{ env.AWS_REGION }}
-          registry: ${{ env.BACKEND_ECR_REPOSITORY }}
+        uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build, tag, and push backend image to Amazon ECR
         id: build-backend-image
@@ -69,13 +63,6 @@ jobs:
           service: ${{ env.BACKEND_ECS_SERVICE }}
           cluster: ${{ env.BACKEND_ECS_CLUSTER }}
           wait-for-service-stability: true
-
-      - name: Login to Amazon ECR Frontend
-        id: login-ecr-frontend
-        uses: aws-actions/amazon-ecr-login@v1
-        with:
-          region: ${{ env.AWS_REGION }}
-          registry: ${{ env.FRONTEND_ECR_REPOSITORY }}
 
       - name: Build, tag, and push frontend image to Amazon ECR
         id: build-frontend-image
@@ -112,8 +99,8 @@ jobs:
 
       - name: Login to Amazon ECR Frontend
         id: login-ecr-frontend
-        uses: aws-actions/amazon-ecr-login@62f4f872db3836360b72999f4b87f1ff13310f3a
-
+        uses: aws-actions/amazon-ecr-login@v2
+        
       - name: Build, tag, and push frontend image to Amazon ECR
         id: build-frontend-image
         env:
@@ -132,8 +119,6 @@ jobs:
           container-name: ${{ env.CONTAINER_FRONTEND }}
           image: ${{ env.frontend_image }}
 
-      - name: Deploy Amazon ECS task definition for frontend
-        uses: aws-actions/amazon-ecs-deploy-task-definition@df9643053eda01f169e64a0e60233aacca83799a
       - name: Deploy Amazon ECS task definition for frontend
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
